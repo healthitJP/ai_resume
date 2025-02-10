@@ -1,29 +1,29 @@
 steps:
-  - name: "gcr.io/cloud-builders/docker"
-    entrypoint: "bash"
+  # サービスアカウントキーの準備
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
     args:
-      - "-c"
+      - '-c'
       - |
-        # デバッグ出力
-        echo "Debug: Building environment variables"
-        
-        # .env ファイルの作成
+        echo '${_GOOGLE_APPLICATION_CREDENTIALS}' > /workspace/key.json
         mkdir -p next-app
         cat > next-app/.env << EOF
         GOOGLE_APPLICATION_CREDENTIALS=/workspace/key.json
         GOOGLE_VERTEX_LOCATION=asia-northeast1
         GOOGLE_VERTEX_PROJECT=healthit-ai-resume
         EOF
-        
-        # サービスアカウントキーの作成（必要な場合）
-        echo ${_GOOGLE_APPLICATION_CREDENTIALS} > /workspace/key.json
 
-        # Dockerビルドの実行
-        docker build -f Dockerfile \
-          --build-arg GOOGLE_APPLICATION_CREDENTIALS=/workspace/key.json \
-          --build-arg GOOGLE_VERTEX_LOCATION=asia-northeast1 \
-          --build-arg GOOGLE_VERTEX_PROJECT=healthit-ai-resume \
-          -t gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA .
+  # Dockerビルド
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile'
+      - '--build-arg'
+      - 'KEY_FILE=/workspace/key.json'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA'
+      - '.'
 
   # ビルドしたコンテナイメージをArtifact Registryにプッシュ
   - name: "gcr.io/cloud-builders/docker"

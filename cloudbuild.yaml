@@ -5,7 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        echo '${_GOOGLE_APPLICATION_CREDENTIALS}' > /workspace/key.json
+        echo '${_GOOGLE_APPLICATION_CREDENTIALS}' > key.json
         mkdir -p next-app
         cat > next-app/.env << EOF
         GOOGLE_APPLICATION_CREDENTIALS=/workspace/key.json
@@ -20,7 +20,7 @@ steps:
       - '-f'
       - 'Dockerfile'
       - '--build-arg'
-      - 'KEY_FILE=/workspace/key.json'
+      - 'KEY_FILE=/app/key.json'
       - '-t'
       - 'gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA'
       - '.'

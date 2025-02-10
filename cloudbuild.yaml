@@ -10,7 +10,11 @@ steps:
         echo "GOOGLE_VERTEX_LOCATION=${_GOOGLE_VERTEX_LOCATION}" >> next-app/.env
         echo "GOOGLE_VERTEX_PROJECT=${_GOOGLE_VERTEX_PROJECT}" >> next-app/.env
 
-        docker build -f Dockerfile -t gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA .
+        docker build -f Dockerfile \
+          --build-arg GOOGLE_APPLICATION_CREDENTIALS=${_GOOGLE_APPLICATION_CREDENTIALS} \
+          --build-arg GOOGLE_VERTEX_LOCATION=${_GOOGLE_VERTEX_LOCATION} \
+          --build-arg GOOGLE_VERTEX_PROJECT=${_GOOGLE_VERTEX_PROJECT} \
+          -t gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA .
 
   # ビルドしたコンテナイメージをArtifact Registryにプッシュ
   - name: "gcr.io/cloud-builders/docker"

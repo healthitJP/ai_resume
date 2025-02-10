@@ -41,7 +41,8 @@ export default function Home() {
         sender: "bot",
       };
       setMessages(prev => [...prev, botMessage]);
-    } catch (_) {  // error を _ に変更
+    } catch (error) {  // error を _ に変更
+      console.error('チャットエラー:', error);  // エラーをログ出力
       const errorMessage: Message = {
         id: Date.now() + 1,
         content: "エラーが発生しました",

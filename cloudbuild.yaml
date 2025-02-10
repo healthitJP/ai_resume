@@ -1,0 +1,33 @@
+steps:
+  # .envにCloud Buildの代入変数を埋め込むステップを追加する
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo "GOOGLE_APPLICATION_CREDENTIALS=${_GOOGLE_APPLICATION_CREDENTIALS}" >> .env
+        echo "GOOGLE_VERTEX_LOCATION=${_GOOGLE_VERTEX_LOCATION}" >> .env
+        echo "GOOGLE_VERTEX_PROJECT=${_GOOGLE_VERTEX_PROJECT}" >> .env
+
+        docker build -f Dockerfile -t gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA .
+
+  # ビルドしたコンテナイメージをArtifact Registryにプッシュ
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA"]
+
+  # Artifact RegistryのコンテナイメージをCloud Runにデプロイ
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "ai-resume"
+      - "--image"
+      - "gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA"
+      - "--region"
+      - "${_DEPLOY_REGION}"
+images:
+  - "gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA"
+timeout: 900s
+
+options:
+  logging: CLOUD_LOGGING_ONLY

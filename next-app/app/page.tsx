@@ -41,7 +41,7 @@ export default function Home() {
         sender: "bot",
       };
       setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
+    } catch (_) {  // error を _ に変更
       const errorMessage: Message = {
         id: Date.now() + 1,
         content: "エラーが発生しました",
@@ -83,7 +83,7 @@ export default function Home() {
         <form onSubmit={sendMessage} className="flex gap-2">
           <input
             type="text"
-            className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500"
+            className="flex-1 p-2 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500 text-black"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="メッセージを入力..."

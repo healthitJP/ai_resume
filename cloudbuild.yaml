@@ -1,25 +1,28 @@
 steps:
-  # .envにCloud Buildの代入変数を埋め込むステップを追加する
   - name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-        echo "Debug: GOOGLE_APPLICATION_CREDENTIALS=${_GOOGLE_APPLICATION_CREDENTIALS}"
-        echo "Debug: GOOGLE_VERTEX_LOCATION=${_GOOGLE_VERTEX_LOCATION}"
-        echo "Debug: GOOGLE_VERTEX_PROJECT=${_GOOGLE_VERTEX_PROJECT}"
+        # デバッグ出力
+        echo "Debug: Building environment variables"
         
+        # .env ファイルの作成
         mkdir -p next-app
         cat > next-app/.env << EOF
-        GOOGLE_APPLICATION_CREDENTIALS="${_GOOGLE_APPLICATION_CREDENTIALS}"
-        GOOGLE_VERTEX_LOCATION="${_GOOGLE_VERTEX_LOCATION}"
-        GOOGLE_VERTEX_PROJECT="${_GOOGLE_VERTEX_PROJECT}"
+        GOOGLE_APPLICATION_CREDENTIALS=/workspace/key.json
+        GOOGLE_VERTEX_LOCATION=asia-northeast1
+        GOOGLE_VERTEX_PROJECT=healthit-ai-resume
         EOF
+        
+        # サービスアカウントキーの作成（必要な場合）
+        echo ${_GOOGLE_APPLICATION_CREDENTIALS} > /workspace/key.json
 
+        # Dockerビルドの実行
         docker build -f Dockerfile \
-          --build-arg CREDS=${_GOOGLE_APPLICATION_CREDENTIALS} \
-          --build-arg LOCATION=${_GOOGLE_VERTEX_LOCATION} \
-          --build-arg PROJECT=${_GOOGLE_VERTEX_PROJECT} \
+          --build-arg GOOGLE_APPLICATION_CREDENTIALS=/workspace/key.json \
+          --build-arg GOOGLE_VERTEX_LOCATION=asia-northeast1 \
+          --build-arg GOOGLE_VERTEX_PROJECT=healthit-ai-resume \
           -t gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA .
 
   # ビルドしたコンテナイメージをArtifact Registryにプッシュ

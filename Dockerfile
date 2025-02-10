@@ -1,10 +1,10 @@
 FROM node:18 AS builder
 WORKDIR /app
 
-COPY package*.json ./
+COPY next-app/package*.json ./
 RUN npm ci
 
-COPY . .
+COPY next-app/ .
 RUN npm run build
 
 FROM node:18

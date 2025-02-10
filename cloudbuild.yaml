@@ -5,9 +5,10 @@ steps:
     args:
       - "-c"
       - |
-        echo "GOOGLE_APPLICATION_CREDENTIALS=${_GOOGLE_APPLICATION_CREDENTIALS}" >> .env
-        echo "GOOGLE_VERTEX_LOCATION=${_GOOGLE_VERTEX_LOCATION}" >> .env
-        echo "GOOGLE_VERTEX_PROJECT=${_GOOGLE_VERTEX_PROJECT}" >> .env
+        mkdir -p next-app
+        echo "GOOGLE_APPLICATION_CREDENTIALS=${_GOOGLE_APPLICATION_CREDENTIALS}" >> next-app/.env
+        echo "GOOGLE_VERTEX_LOCATION=${_GOOGLE_VERTEX_LOCATION}" >> next-app/.env
+        echo "GOOGLE_VERTEX_PROJECT=${_GOOGLE_VERTEX_PROJECT}" >> next-app/.env
 
         docker build -f Dockerfile -t gcr.io/$PROJECT_ID/ai-resume:$COMMIT_SHA .
 
